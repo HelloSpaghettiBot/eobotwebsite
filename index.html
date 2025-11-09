@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EOBots</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html, body { scroll-behavior: smooth; }
+    .section { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+    .card { border: 2px solid red; border-radius: 0.5rem; padding: 1rem; transition: all 0.3s ease; cursor: pointer; background-color: rgba(255,0,0,0.05); }
+    .card:hover { background-color: rgba(255,0,0,0.15); }
+    .expanded { background-color: rgba(255,0,0,0.25); }
+  </style>
+</head>
+<body class="bg-black text-white font-sans overflow-x-hidden">
+
+  <!-- Navbar -->
+  <nav class="fixed top-0 left-0 w-full bg-black bg-opacity-80 border-b border-red-600 z-50">
+    <ul class="flex justify-center space-x-6 p-4 text-lg">
+      <li><a href="#home" class="hover:text-red-500">Home</a></li>
+      <li><a href="#download" class="hover:text-red-500">Download</a></li>
+      <li><a href="#howto" class="hover:text-red-500">How To</a></li>
+      <li><a href="#forum" class="hover:text-red-500">Forum</a></li>
+    </ul>
+  </nav>
+
+  <!-- Home -->
+  <section id="home" class="section text-center px-8">
+    <h1 class="text-5xl font-bold text-red-500 mb-6">Welcome to EOBots</h1>
+    <p class="max-w-2xl text-lg">
+      EOBots is your hub for Endless Online automation, custom bots, and tools built by players for players.
+      Explore downloads, learn setup guides, and connect with the community.
+    </p>
+  </section>
+
+  <!-- Downloads -->
+  <section id="download" class="section px-6">
+    <h2 class="text-4xl font-bold text-red-500 mb-10">Downloads</h2>
+    <div id="downloadsContainer" class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-6xl"></div>
+  </section>
+
+  <!-- How To -->
+  <section id="howto" class="section px-6">
+    <h2 class="text-4xl font-bold text-red-500 mb-10">How To Use</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl">
+      <div class="card" onclick="toggleCard(this)">
+        <h3 class="text-xl font-bold mb-2">Setting Up EOProxy</h3>
+        <p>Learn how to install and run the proxy.</p>
+        <div class="hidden mt-4">
+          <iframe class="w-full aspect-video rounded" src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
+        </div>
+      </div>
+      <div class="card" onclick="toggleCard(this)">
+        <h3 class="text-xl font-bold mb-2">Configuring CaptchaBot</h3>
+        <p>Step-by-step setup tutorial.</p>
+        <div class="hidden mt-4">
+          <iframe class="w-full aspect-video rounded" src="https://www.youtube.com/embed/ysz5S6PUM-U" allowfullscreen></iframe>
+        </div>
+      </div>
+      <div class="card" onclick="toggleCard(this)">
+        <h3 class="text-xl font-bold mb-2">Recording Routes</h3>
+        <p>Guide to using the WalkPath Recorder.</p>
+        <div class="hidden mt-4">
+          <iframe class="w-full aspect-video rounded" src="https://www.youtube.com/embed/ScMzIvxBSi4" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Forum -->
+  <section id="forum" class="section px-4">
+    <h2 class="text-4xl font-bold text-red-500 mb-6">Community Forum</h2>
+    <p class="mb-4 text-lg text-center max-w-2xl">
+      Talk with other EOBots users, share code, report bugs, and discuss updates below.<br>
+      If the embed doesn’t load, <a href="https://eobots.freeforums.net/" target="_blank" class="text-red-400 underline">click here to open the forum</a>.
+    </p>
+
+    <iframe
+      src="https://eobots.freeforums.net/"
+      class="w-full max-w-6xl"
+      style="height: 80vh; border: 2px solid red; border-radius: 0.5rem;"
+      loading="lazy"
+    ></iframe>
+
+    <a href="https://eobots.freeforums.net/"
+       target="_blank"
+       class="mt-6 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg text-lg">
+       Open Full Forum
+    </a>
+  </section>
+
+  <!-- Footer -->
+  <footer class="text-center py-6 border-t border-red-600 text-sm">
+    © 2025 EOBots. Built by atRisk.
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    function toggleCard(card) {
+      const expanded = card.querySelector("div.hidden");
+      if (!expanded) return;
+      expanded.classList.toggle("hidden");
+      card.classList.toggle("expanded");
+    }
+
+    async function loadDownloads() {
+      const container = document.getElementById('downloadsContainer');
+      try {
+        const res = await fetch('downloads.json');
+        const downloads = await res.json();
+        container.innerHTML = '';
+
+        downloads.forEach((d) => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `
+            <h3 class="text-xl font-bold mb-2">${d.title}</h3>
+            <p>${d.description}</p>
+            <div class="hidden mt-4 text-sm">
+              <p><strong>Version:</strong> ${d.version}</p>
+              <p>${d.details}</p>
+              <a href="${d.link}" target="_blank" class="text-red-400 underline mt-2 inline-block">Download</a>
+            </div>
+          `;
+          card.onclick = () => toggleCard(card);
+          container.appendChild(card);
+        });
+      } catch (err) {
+        container.innerHTML = '<p class="text-red-400">Error loading downloads.json</p>';
+      }
+    }
+
+    loadDownloads();
+  </script>
+
+</body>
+</html>
