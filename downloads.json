@@ -43,9 +43,9 @@
   }
     {
     "title": "Captcha Solver (LEGACY)",
-    "description": "Automated OCR-based captcha bypass.",
+    "description": "Automated OCR-based captcha bypass. Issues with the small K.",
     "version": "1.4.2",
     "details": "You must download Tesseract: https://github.com/tesseract-ocr/tesseract/releases/download/5.5.0/tesseract-ocr-w64-setup-5.5.0.20241111.exe once installed run the captcha script",
-    "link": "https://mega.nz/file/INVWwYha#cYYUXucAKiRJNDPlpUBxthZBgTuYYZKCejVkkGueHgU"
+    "link": "https://github.com/HelloSpaghettiBot/EO-Captcha-Solver/blob/main/CaptchaBotV2.py"
   },
 ]
