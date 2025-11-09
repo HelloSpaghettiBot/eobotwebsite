@@ -10,42 +10,42 @@
     "title": "Captcha Solver (Trashman Edition)",
     "description": "Automated OCR-based captcha bypass.",
     "version": "2.2",
-    "details": "You must download Tesseract: https://github.com/tesseract-ocr/tesseract/releases/download/5.5.0/tesseract-ocr-w64-setup-5.5.0.20241111.exe once installed run the captcha script",
+    "details": "You must download Tesseract: https://github.com/tesseract-ocr/tesseract/releases/download/5.5.0/tesseract-ocr-w64-setup-5.5.0.20241111.exe. Once installed, run the captcha script.",
     "link": "https://mega.nz/file/9YNUgSDK#QGW21abjoLvwUEEwJOU7HYy515tmseA8FTGPXU1Te2Q"
   },
-    {
+  {
     "title": "Tesseract For Captcha Solver",
-    "description": "Automated OCR-based captcha bypass.",
+    "description": "Required OCR engine for the captcha solver.",
     "version": "1.4.2",
     "details": "You must download Tesseract for the captcha solver to run.",
     "link": "https://github.com/tesseract-ocr/tesseract/releases/download/5.5.0/tesseract-ocr-w64-setup-5.5.0.20241111.exe"
   },
-    {
+  {
     "title": "CeraBot",
-    "description": "Automated Boss and Training Bot.",
+    "description": "Automated boss and training bot.",
     "version": "12",
-    "details": "Meele, Range, Item Pickup.",
+    "details": "Melee, ranged, item pickup.",
     "link": "https://mega.nz/file/NB0zxKyJ#T1dCy4lPXf1OUBPJmiDEnAW5rm3HUJT_QDN-bjtBSJg"
   },
-      {
+  {
     "title": "Walkable Recorder",
     "description": "Record tiles for your CeraBot to follow and use.",
     "version": "2",
-    "details": "A easy to use recorder to record your walkable.json files for Cerabot.",
+    "details": "An easy-to-use recorder to create your walkable.json files for CeraBot.",
     "link": "https://mega.nz/file/QcsiRDpD#BSowb0EWCuQII_J3prYtwA70MJuWbnl-Gotb4EQpEIg"
   },
   {
     "title": "CeraBot 7",
-    "description": "A basic meleebot",
+    "description": "A basic melee bot.",
     "version": "1.0.0",
-    "details": "Melee, walk, gain exp. AFK BOT.",
+    "details": "Melee, walk, gain EXP. AFK bot.",
     "link": "https://mega.nz/file/REF2lSZI#zTq43ZD56gF7QBk0C0rGUqvJQ3x62hn4PgXnJQWNPL4"
   },
-    {
+  {
     "title": "Captcha Solver (LEGACY)",
-    "description": "Automated OCR-based captcha bypass. Issues with the small K.",
+    "description": "Automated OCR-based captcha bypass (known issue with small 'k').",
     "version": "1.4.2",
-    "details": "You must download Tesseract: https://github.com/tesseract-ocr/tesseract/releases/download/5.5.0/tesseract-ocr-w64-setup-5.5.0.20241111.exe once installed run the captcha script",
+    "details": "You must download Tesseract: https://github.com/tesseract-ocr/tesseract/releases/download/5.5.0/tesseract-ocr-w64-setup-5.5.0.20241111.exe. Once installed, run the captcha script.",
     "link": "https://github.com/HelloSpaghettiBot/EO-Captcha-Solver/blob/main/CaptchaBotV2.py"
   }
 ]
