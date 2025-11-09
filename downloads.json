@@ -7,11 +7,11 @@
     "link": "https://mega.nz/file/MUlniZqL#tm-GC2Ouek9F-sOR7w8P-BkLNIlhRoqS1WRZehdUxOw"
   },
   {
-    "title": "Captcha Solver",
+    "title": "Captcha Solver (Trashman Edition)",
     "description": "Automated OCR-based captcha bypass.",
-    "version": "1.4.2",
+    "version": "2.2",
     "details": "You must download Tesseract: https://github.com/tesseract-ocr/tesseract/releases/download/5.5.0/tesseract-ocr-w64-setup-5.5.0.20241111.exe once installed run the captcha script",
-    "link": "https://mega.nz/file/INVWwYha#cYYUXucAKiRJNDPlpUBxthZBgTuYYZKCejVkkGueHgU"
+    "link": "https://mega.nz/file/9YNUgSDK#QGW21abjoLvwUEEwJOU7HYy515tmseA8FTGPXU1Te2Q"
   },
     {
     "title": "Tesseract For Captcha Solver",
@@ -41,4 +41,11 @@
     "details": "Melee, walk, gain exp. AFK BOT.",
     "link": "https://mega.nz/file/REF2lSZI#zTq43ZD56gF7QBk0C0rGUqvJQ3x62hn4PgXnJQWNPL4"
   }
+    {
+    "title": "Captcha Solver (LEGACY)",
+    "description": "Automated OCR-based captcha bypass.",
+    "version": "1.4.2",
+    "details": "You must download Tesseract: https://github.com/tesseract-ocr/tesseract/releases/download/5.5.0/tesseract-ocr-w64-setup-5.5.0.20241111.exe once installed run the captcha script",
+    "link": "https://mega.nz/file/INVWwYha#cYYUXucAKiRJNDPlpUBxthZBgTuYYZKCejVkkGueHgU"
+  },
 ]
