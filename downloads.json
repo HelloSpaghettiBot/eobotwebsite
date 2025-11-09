@@ -40,12 +40,12 @@
     "version": "1.0.0",
     "details": "Melee, walk, gain exp. AFK BOT.",
     "link": "https://mega.nz/file/REF2lSZI#zTq43ZD56gF7QBk0C0rGUqvJQ3x62hn4PgXnJQWNPL4"
-  }
+  },
     {
     "title": "Captcha Solver (LEGACY)",
     "description": "Automated OCR-based captcha bypass. Issues with the small K.",
     "version": "1.4.2",
     "details": "You must download Tesseract: https://github.com/tesseract-ocr/tesseract/releases/download/5.5.0/tesseract-ocr-w64-setup-5.5.0.20241111.exe once installed run the captcha script",
     "link": "https://github.com/HelloSpaghettiBot/EO-Captcha-Solver/blob/main/CaptchaBotV2.py"
-  },
+  }
 ]
