@@ -10,7 +10,7 @@
     "title": "Captcha Solver",
     "description": "Automated OCR-based captcha bypass.",
     "version": "1.4.2",
-    "details": "Includes Tesseract pre-setup and training data.",
+    "details": "You must download Tesseract: https://github.com/tesseract-ocr/tesseract/releases/download/5.5.0/tesseract-ocr-w64-setup-5.5.0.20241111.exe once installed run the captcha script",
     "link": "https://mega.nz/file/INVWwYha#cYYUXucAKiRJNDPlpUBxthZBgTuYYZKCejVkkGueHgU"
   },
     {
