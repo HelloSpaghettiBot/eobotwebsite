@@ -1,0 +1,23 @@
+[
+  {
+    "title": "EOProxy Tool",
+    "description": "Network packet analyzer for Endless Online.",
+    "version": "2.3.1",
+    "details": "Updated for the latest EO patch with logging and filtering.",
+    "link": "https://mega.nz/file/MUlniZqL#tm-GC2Ouek9F-sOR7w8P-BkLNIlhRoqS1WRZehdUxOw"
+  },
+  {
+    "title": "Captcha Solver",
+    "description": "Automated OCR-based captcha bypass.",
+    "version": "1.4.2",
+    "details": "Includes Tesseract pre-setup and training data.",
+    "link": "https://mega.nz/file/INVWwYha#cYYUXucAKiRJNDPlpUBxthZBgTuYYZKCejVkkGueHgU"
+  },
+  {
+    "title": "WalkPath Recorder",
+    "description": "Records and replays player movement paths in-game.",
+    "version": "1.0.0",
+    "details": "JSON-based navigation system for automation.",
+    "link": "#"
+  }
+]
