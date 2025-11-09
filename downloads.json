@@ -14,11 +14,25 @@
     "link": "https://mega.nz/file/INVWwYha#cYYUXucAKiRJNDPlpUBxthZBgTuYYZKCejVkkGueHgU"
   },
     {
+    "title": "Tesseract For Captcha Solver",
+    "description": "Automated OCR-based captcha bypass.",
+    "version": "1.4.2",
+    "details": "You must download Tesseract for the captcha solver to run.",
+    "link": "https://github.com/tesseract-ocr/tesseract/releases/download/5.5.0/tesseract-ocr-w64-setup-5.5.0.20241111.exe"
+  },
+    {
     "title": "CeraBot",
     "description": "Automated Boss and Training Bot.",
     "version": "12",
     "details": "Meele, Range, Item Pickup.",
-    "link": "https://mega.nz/file/INVWwYha#cYYUXucAKiRJNDPlpUBxthZBgTuYYZKCejVkkGueHgU"
+    "link": "https://mega.nz/file/NB0zxKyJ#T1dCy4lPXf1OUBPJmiDEnAW5rm3HUJT_QDN-bjtBSJg"
+  },
+      {
+    "title": "Walkable Recorder",
+    "description": "Record tiles for your CeraBot to follow and use.",
+    "version": "2",
+    "details": "A easy to use recorder to record your walkable.json files for Cerabot.",
+    "link": "https://mega.nz/file/QcsiRDpD#BSowb0EWCuQII_J3prYtwA70MJuWbnl-Gotb4EQpEIg"
   },
   {
     "title": "CeraBot 7",
