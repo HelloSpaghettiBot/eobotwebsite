@@ -217,6 +217,312 @@
 
     loadDownloads();
   </script>
+<!-- EOR Database Search -->
+<section id="eor-api" class="section px-4">
+  <h2 class="text-4xl font-bold text-red-500 mb-4">EOR Database Search</h2>
 
+  <div class="mx-auto max-w-5xl rounded-xl border border-red-500/40 bg-black/30 p-4">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+      <div class="flex flex-wrap gap-2">
+        <button data-cat="items"  class="eor-tab rounded-md border border-red-500/40 px-3 py-1 text-white">Items</button>
+        <button data-cat="npcs"   class="eor-tab rounded-md border border-red-500/40 px-3 py-1 text-white">NPCs</button>
+        <button data-cat="spells" class="eor-tab rounded-md border border-red-500/40 px-3 py-1 text-white">Spells</button>
+        <button data-cat="maps"   class="eor-tab rounded-md border border-red-500/40 px-3 py-1 text-white">Maps</button>
+        <button data-cat="shops"  class="eor-tab rounded-md border border-red-500/40 px-3 py-1 text-white">Shops</button>
+        <button data-cat="classes" class="eor-tab rounded-md border border-red-500/40 px-3 py-1 text-white">Classes</button>
+        <button data-cat="quests" class="eor-tab rounded-md border border-red-500/40 px-3 py-1 text-white">Quests</button>
+      </div>
+
+      <div class="flex-1"></div>
+
+      <label class="flex items-center gap-2 text-sm text-gray-300">
+        <input id="eor-unk" type="checkbox" class="rounded border-red-500/40 bg-black/70">
+        show_unk=1
+      </label>
+
+      <div class="relative w-full sm:w-80">
+        <input id="eor-q" placeholder="Search name or ID…" class="w-full rounded-md bg-black/70 border border-red-500/40 p-2 text-white pr-10">
+        <span class="absolute right-2 top-2 text-gray-400">⌕</span>
+      </div>
+    </div>
+
+    <div class="mt-4 grid gap-4 lg:grid-cols-2">
+      <div>
+        <div id="eor-status" class="text-sm text-gray-300 mb-2">Pick a category.</div>
+        <ul id="eor-list" class="divide-y divide-red-500/20 rounded-md border border-red-500/30 bg-black/50 max-h-[28rem] overflow-auto"></ul>
+        <button id="eor-more" class="mt-3 hidden rounded-md border border-red-500/40 px-3 py-1 text-white">Load more</button>
+      </div>
+
+      <div class="rounded-md border border-red-500/30 bg-black/50 p-3">
+        <div class="flex items-center justify-between gap-2">
+          <h3 id="eor-detail-title" class="text-xl font-semibold text-white">Details</h3>
+          <div class="flex gap-2">
+            <button id="eor-copy-json" class="rounded-md border border-red-500/40 px-2 py-1 text-xs text-white">Copy JSON</button>
+            <button id="eor-copy-curl" class="rounded-md border border-red-500/40 px-2 py-1 text-xs text-white">Copy curl</button>
+          </div>
+        </div>
+        <div id="eor-images" class="mt-3 flex flex-wrap gap-3"></div>
+        <pre id="eor-detail" class="mt-3 max-h-[26rem] overflow-auto rounded bg-black/70 p-3 text-green-200 text-sm border border-red-500/20">Select a result…</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+(() => {
+  const BASE = "https://eor-api.exile-studios.com";
+  const unk = document.getElementById("eor-unk");
+  const q = document.getElementById("eor-q");
+  const status = document.getElementById("eor-status");
+  const listEl = document.getElementById("eor-list");
+  const moreBtn = document.getElementById("eor-more");
+  const detailEl = document.getElementById("eor-detail");
+  const titleEl = document.getElementById("eor-detail-title");
+  const imgWrap = document.getElementById("eor-images");
+  const copyJsonBtn = document.getElementById("eor-copy-json");
+  const copyCurlBtn = document.getElementById("eor-copy-curl");
+
+  const tabs = Array.from(document.querySelectorAll(".eor-tab"));
+  let current = "items";
+  let cache = {};      // { cat: { list: [...normalized], raw: [...] } }
+  let filtered = [];   // current filtered list
+  let page = 0;
+  const PAGE_SIZE = 100;
+
+  const catCfg = {
+    items:  { list: "/api/items",   detail: id => `/api/items/${id}`,   images: id => [`/api/items/${id}/graphic`,`/api/items/${id}/graphic/ground`] },
+    npcs:   { list: "/api/npcs",    detail: id => `/api/npcs/${id}`,    images: id => [`/api/npcs/${id}/graphic`] },
+    spells: { list: "/api/spells",  detail: id => `/api/spells/${id}`,  images: id => [`/api/spells/${id}/icon`,`/api/spells/${id}/graphic`] },
+    maps:   { list: "/api/maps",    detail: id => `/api/maps/${id}`,    images: null },
+    shops:  { list: "/api/shops",   detail: name => `/api/shops/${encodeURIComponent(name)}`, images: null, key: "name" },
+    classes:{ list: "/api/classes", detail: id => `/api/classes/${id}`, images: null },
+    quests: { list: "/api/quests",  detail: id => `/api/quests/${id}`,  images: null },
+  };
+
+  function qs(url) {
+    if (!unk.checked) return url;
+    return url + (url.includes("?") ? "&" : "?") + "show_unk=1";
+    }
+
+  async function fetchJson(path) {
+    const url = qs(BASE + path);
+    const res = await fetch(url, { headers: { "Accept": "application/json" } });
+    if (!res.ok) throw new Error(res.status + " " + res.statusText);
+    return res.json();
+  }
+
+  function normalizeList(cat, data) {
+    // data may be array of objects, numbers, strings
+    return (Array.isArray(data) ? data : []).map((rec, idx) => {
+      if (typeof rec === "string") return { id: rec, name: rec, raw: rec };
+      if (typeof rec === "number") return { id: rec, name: String(rec), raw: rec };
+      const id = rec.id ?? rec.itemId ?? rec.npcId ?? rec.spellId ?? rec.classId ?? rec.questId ?? rec.mapId ?? rec.index ?? rec.name ?? idx;
+      const name = rec.name ?? rec.displayName ?? ("#" + id);
+      return { id, name, raw: rec };
+    });
+  }
+
+  async function ensureList(cat) {
+    if (cache[cat]?.list) return;
+    status.textContent = "Loading " + cat + "…";
+    try {
+      const data = await fetchJson(catCfg[cat].list);
+      cache[cat] = { raw: data, list: normalizeList(cat, data) };
+      status.textContent = "Loaded " + cache[cat].list.length + " " + cat + ".";
+    } catch (e) {
+      status.textContent = "Error loading " + cat + ": " + e.message;
+      cache[cat] = { raw: [], list: [] };
+    }
+  }
+
+  function applyFilter() {
+    const needle = q.value.trim().toLowerCase();
+    const list = cache[current].list;
+    filtered = needle
+      ? list.filter(r => String(r.name).toLowerCase().includes(needle) || String(r.id).toLowerCase().includes(needle))
+      : list.slice();
+    page = 0;
+    renderPage();
+  }
+
+  function renderPage() {
+    listEl.innerHTML = "";
+    const start = page * PAGE_SIZE;
+    const slice = filtered.slice(start, start + PAGE_SIZE);
+    if (!slice.length) {
+      listEl.innerHTML = `<li class="p-3 text-gray-300">No results.</li>`;
+      moreBtn.classList.add("hidden");
+      return;
+    }
+    const frag = document.createDocumentFragment();
+    for (const r of slice) {
+      const li = document.createElement("li");
+      li.className = "p-2 hover:bg-black/40 cursor-pointer";
+      li.innerHTML = `<div class="flex items-center justify-between gap-2">
+        <div class="truncate text-white">${escapeHtml(r.name)}</div>
+        <div class="text-xs text-gray-400">ID: ${escapeHtml(String(r.id))}</div>
+      </div>`;
+      li.addEventListener("click", () => showDetail(r));
+      frag.appendChild(li);
+    }
+    listEl.appendChild(frag);
+    moreBtn.classList.toggle("hidden", start + PAGE_SIZE >= filtered.length);
+  }
+
+  function escapeHtml(s) { return s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+  async function showDetail(r) {
+    titleEl.textContent = `${capitalize(current)} – ${r.name}`;
+    detailEl.textContent = "Loading details…";
+    imgWrap.innerHTML = "";
+    try {
+      const detailPath = catCfg[current].detail(r.id);
+      const data = await fetchJson(detailPath);
+      detailEl.textContent = JSON.stringify(data, null, 2);
+
+      const imgs = catCfg[current].images ? catCfg[current].images(r.id) : [];
+      if (imgs && imgs.length) {
+        for (const p of imgs) {
+          const url = qs(BASE + p);
+          const img = document.createElement("img");
+          img.src = url;
+          img.alt = current + " image";
+          img.className = "max-h-64 object-contain rounded border border-red-500/30 bg-black/70 p-2";
+          imgWrap.appendChild(img);
+        }
+      }
+      copyCurlBtn.onclick = () => copy(`curl "${qs(BASE + detailPath)}"`);
+      copyJsonBtn.onclick = () => copy(JSON.stringify(data, null, 2));
+    } catch (e) {
+      detailEl.textContent = "Error: " + e.message;
+      copyCurlBtn.onclick = null;
+      copyJsonBtn.onclick = null;
+    }
+  }
+
+  function copy(text) {
+    navigator.clipboard.writeText(text).then(() => {
+      copyJsonBtn.textContent = "Copied";
+      copyCurlBtn.textContent = "Copied";
+      setTimeout(() => { copyJsonBtn.textContent = "Copy JSON"; copyCurlBtn.textContent = "Copy curl"; }, 800);
+    });
+  }
+
+  function capitalize(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+
+  function setActive(cat) {
+    current = cat;
+    tabs.forEach(b => b.classList.toggle("bg-red-600", b.dataset.cat === cat));
+  }
+
+  async function initCategory(cat) {
+    setActive(cat);
+    await ensureList(cat);
+    applyFilter();
+  }
+
+  // events
+  tabs.forEach(b => b.addEventListener("click", () => initCategory(b.dataset.cat)));
+  moreBtn.addEventListener("click", () => { page++; renderPage(); });
+
+  let t=0;
+  q.addEventListener("input", () => { clearTimeout(t); t = setTimeout(applyFilter, 150); });
+  unk.addEventListener("change", () => initCategory(current));
+
+  // start
+  initCategory(current);
+})();
+</script>
+
+ <!-- EO Guides -->
+<section id="eoguides" class="section px-4">
+  <h2 class="text-4xl font-bold text-red-500 mb-4">EO Guides</h2>
+
+  <div class="mx-auto max-w-5xl rounded-xl border border-red-500/40 bg-black/30 p-4">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+      <label class="text-sm text-gray-300">
+        Page
+        <select id="eog-select" class="w-full mt-1 rounded-md bg-black/70 border border-red-500/40 p-2 text-white">
+          <option value="https://www.eo-guides.com/">Home</option>
+          <option value="https://www.eo-guides.com/guides">Guides index</option>
+          <option value="https://www.eo-guides.com/quests">Quests</option>
+          <option value="https://www.eo-guides.com/boss-encounters">Boss Encounters</option>
+          <option value="https://www.eo-guides.com/classes">Classes</option>
+          <option value="https://www.eo-guides.com/world-map">World Map</option>
+          <option value="https://www.eo-guides.com/commands">Commands</option>
+        </select>
+      </label>
+
+      <div class="flex-1"></div>
+
+      <a href="https://www.eo-guides.com/" target="_blank" rel="noopener"
+         class="inline-block rounded-md bg-red-600 px-4 py-2 text-white font-semibold hover:opacity-90">
+        Open full site
+      </a>
+    </div>
+
+    <!-- Embed -->
+    <div class="relative mt-4 rounded-xl overflow-hidden shadow-2xl ring-1 ring-red-500/40 min-h-[700px]">
+      <iframe id="eog-frame"
+        src="https://www.eo-guides.com/"
+        class="absolute inset-0 h-full w-full border-0"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+        title="EO Guides"
+      ></iframe>
+    </div>
+
+    <!-- Fallback notice (shown if embed is blocked) -->
+    <div id="eog-fallback" class="hidden mt-3 rounded-md border border-red-500/30 bg-black/50 p-3 text-sm text-gray-300">
+      If the embed is blank or says it refused to connect, the site doesn’t allow iframing. Use the quick links below.
+    </div>
+
+    <!-- Quick links -->
+    <div class="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+      <a class="rounded-md border border-red-500/30 bg-black/50 px-3 py-2 text-white hover:bg-black/60"
+         href="https://www.eo-guides.com/guides" target="_blank" rel="noopener">Guides index</a>
+      <a class="rounded-md border border-red-500/30 bg-black/50 px-3 py-2 text-white hover:bg-black/60"
+         href="https://www.eo-guides.com/boss-encounters" target="_blank" rel="noopener">Boss Encounters</a>
+      <a class="rounded-md border border-red-500/30 bg-black/50 px-3 py-2 text-white hover:bg-black/60"
+         href="https://www.eo-guides.com/classes" target="_blank" rel="noopener">Classes</a>
+      <a class="rounded-md border border-red-500/30 bg-black/50 px-3 py-2 text-white hover:bg-black/60"
+         href="https://www.eo-guides.com/world-map" target="_blank" rel="noopener">World Map</a>
+      <a class="rounded-md border border-red-500/30 bg-black/50 px-3 py-2 text-white hover:bg-black/60"
+         href="https://www.eo-guides.com/commands" target="_blank" rel="noopener">Commands</a>
+      <a class="rounded-md border border-red-500/30 bg-black/50 px-3 py-2 text-white hover:bg-black/60"
+         href="https://www.eo-guides.com/quests" target="_blank" rel="noopener">Quests</a>
+    </div>
+  </div>
+</section>
+
+<script>
+(() => {
+  const sel = document.getElementById("eog-select");
+  const frame = document.getElementById("eog-frame");
+  const fallback = document.getElementById("eog-fallback");
+  const KEY = "eog.last";
+
+  // restore last page
+  const last = localStorage.getItem(KEY);
+  if (last) { sel.value = last; frame.src = last; }
+
+  sel.addEventListener("change", () => {
+    frame.src = sel.value;
+    localStorage.setItem(KEY, sel.value);
+  });
+
+  // detect obvious frame-block (best-effort)
+  frame.addEventListener("load", () => {
+    // We can't read cross-origin, but if the frame navigated to "about:blank" or 204-style, show fallback.
+    try {
+      const blocked = !frame.contentWindow || frame.src === "about:blank";
+      if (blocked) fallback.classList.remove("hidden");
+    } catch { /* cross-origin: ignore */ }
+  });
+})();
+</script> 
+
+  
 </body>
 </html>
