@@ -13,11 +13,18 @@
     "details": "Includes Tesseract pre-setup and training data.",
     "link": "https://mega.nz/file/INVWwYha#cYYUXucAKiRJNDPlpUBxthZBgTuYYZKCejVkkGueHgU"
   },
+    {
+    "title": "CeraBot",
+    "description": "Automated Boss and Training Bot.",
+    "version": "12",
+    "details": "Meele, Range, Item Pickup.",
+    "link": "https://mega.nz/file/INVWwYha#cYYUXucAKiRJNDPlpUBxthZBgTuYYZKCejVkkGueHgU"
+  },
   {
-    "title": "WalkPath Recorder",
-    "description": "Records and replays player movement paths in-game.",
+    "title": "CeraBot 7",
+    "description": "A basic meleebot",
     "version": "1.0.0",
-    "details": "JSON-based navigation system for automation.",
-    "link": "#"
+    "details": "Melee, walk, gain exp. AFK BOT.",
+    "link": "https://mega.nz/file/REF2lSZI#zTq43ZD56gF7QBk0C0rGUqvJQ3x62hn4PgXnJQWNPL4"
   }
 ]
