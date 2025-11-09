@@ -17,11 +17,13 @@
 
   <!-- Navbar -->
   <nav class="fixed top-0 left-0 w-full bg-black bg-opacity-80 border-b border-red-600 z-50">
-    <ul class="flex justify-center space-x-6 p-4 text-lg">
+    <ul class="flex justify-center flex-wrap gap-4 p-4 text-lg">
       <li><a href="#home" class="hover:text-red-500">Home</a></li>
       <li><a href="#download" class="hover:text-red-500">Download</a></li>
       <li><a href="#howto" class="hover:text-red-500">How To</a></li>
       <li><a href="#forum" class="hover:text-red-500">Discord</a></li>
+      <li><a href="#eor-api" class="hover:text-red-500">EOR DB</a></li>
+      <li><a href="#eoguides" class="hover:text-red-500">EO Guides</a></li>
     </ul>
   </nav>
 
@@ -138,77 +140,11 @@
     </div>
   </section>
 
-  <!-- Footer -->
-  <footer class="text-center py-6 border-t border-red-600 text-sm">
-    © 2025 EOBots. Built by atRisk.
-  </footer>
+  <!-- EOR Database Search (mobile-safe heights) -->
+  <section id="eor-api" class="section px-4 min-h-0 justify-start items-stretch">
+    <h2 class="text-4xl font-bold text-red-500 mb-4 text-center">EOR Database Search</h2>
 
-  <!-- Scripts -->
-  <script>
-    // Single toggle handler (keeps your original behavior and avoids duplicates)
-    function toggleCard(cardEl) {
-      // Only one open at a time
-      document.querySelectorAll('#howto .card').forEach(c => { if (c !== cardEl) collapseCard(c); });
-
-      const body = cardEl.querySelector('.card-body');
-      const willOpen = body && body.classList.contains('hidden');
-      if (!body) return;
-
-      if (willOpen) {
-        body.classList.remove('hidden');
-        cardEl.classList.add('expanded');
-      } else {
-        collapseCard(cardEl);
-      }
-    }
-
-    function collapseCard(cardEl) {
-      const body = cardEl.querySelector('.card-body');
-      if (!body || body.classList.contains('hidden')) return;
-      // Stop playback by resetting the iframe src
-      const iframe = body.querySelector('iframe');
-      if (iframe) { const src = iframe.src; iframe.src = src; }
-      body.classList.add('hidden');
-      cardEl.classList.remove('expanded');
-    }
-
-    // Downloads loader (keeps your schema: title, description, version, details, link)
-    async function loadDownloads() {
-      const container = document.getElementById('downloadsContainer');
-      try {
-        const res = await fetch('downloads.json', { cache: 'no-store' });
-        if (!res.ok) throw new Error(res.statusText);
-        const downloads = await res.json();
-        if (!Array.isArray(downloads)) throw new Error('downloads.json must be an array');
-
-        container.innerHTML = '';
-        downloads.forEach((d) => {
-          const card = document.createElement('div');
-          card.className = 'card';
-          card.innerHTML = `
-            <h3 class="text-xl font-bold mb-2">${d.title ?? 'Untitled'}</h3>
-            <p>${d.description ?? ''}</p>
-            <div class="hidden mt-4 text-sm">
-              ${d.version ? `<p><strong>Version:</strong> ${d.version}</p>` : ''}
-              ${d.details ? `<p>${d.details}</p>` : ''}
-              ${d.link ? `<a href="${d.link}" target="_blank" class="text-red-400 underline mt-2 inline-block">Download</a>` : ''}
-            </div>
-          `;
-          card.onclick = () => toggleCard(card);
-          container.appendChild(card);
-        });
-      } catch (err) {
-        container.innerHTML = '<p class="text-red-400">Error loading downloads.json</p>';
-      }
-    }
-    loadDownloads();
-  </script>
-
-  <!-- EOR Database Search -->
-  <section id="eor-api" class="section px-4">
-    <h2 class="text-4xl font-bold text-red-500 mb-4">EOR Database Search</h2>
-
-    <div class="mx-auto max-w-5xl rounded-xl border border-red-500/40 bg-black/30 p-4">
+    <div id="eor-wrap" class="mx-auto w-full max-w-5xl rounded-xl border border-red-500/40 bg-black/30 p-4 overflow-hidden">
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
         <div class="flex flex-wrap gap-2">
           <button data-cat="items"  class="eor-tab rounded-md border border-red-500/40 px-3 py-1 text-white">Items</button>
@@ -234,13 +170,13 @@
       </div>
 
       <div class="mt-4 grid gap-4 lg:grid-cols-2">
-        <div>
+        <div class="min-h-0">
           <div id="eor-status" class="text-sm text-gray-300 mb-2">Pick a category.</div>
-          <ul id="eor-list" class="divide-y divide-red-500/20 rounded-md border border-red-500/30 bg-black/50 max-h-[28rem] overflow-auto"></ul>
+          <ul id="eor-list" class="divide-y divide-red-500/20 rounded-md border border-red-500/30 bg-black/50 overflow-auto"></ul>
           <button id="eor-more" class="mt-3 hidden rounded-md border border-red-500/40 px-3 py-1 text-white">Load more</button>
         </div>
 
-        <div class="rounded-md border border-red-500/30 bg-black/50 p-3">
+        <div class="rounded-md border border-red-500/30 bg-black/50 p-3 min-h-0 overflow-hidden">
           <div class="flex items-center justify-between gap-2">
             <h3 id="eor-detail-title" class="text-xl font-semibold text-white">Details</h3>
             <div class="flex gap-2">
@@ -248,15 +184,134 @@
               <button id="eor-copy-curl" class="rounded-md border border-red-500/40 px-2 py-1 text-xs text-white">Copy curl</button>
             </div>
           </div>
-          <div id="eor-images" class="mt-3 flex flex-wrap gap-3"></div>
-          <pre id="eor-detail" class="mt-3 max-h-[26rem] overflow-auto rounded bg-black/70 p-3 text-green-200 text-sm border border-red-500/20">Select a result…</pre>
+          <div id="eor-images" class="mt-3 flex flex-wrap gap-3 overflow-auto"></div>
+          <pre id="eor-detail" class="mt-3 overflow-auto rounded bg-black/70 p-3 text-green-200 text-sm border border-red-500/20">Select a result…</pre>
         </div>
       </div>
     </div>
   </section>
 
+  <!-- EO Guides (screen-fit, with fallback) -->
+  <section id="eoguides" class="section px-4 min-h-0 justify-start items-stretch">
+    <h2 class="text-4xl font-bold text-red-500 mb-4 text-center">EO Guides</h2>
+
+    <div class="mx-auto w-full max-w-6xl rounded-xl border border-red-500/40 bg-black/30 p-4">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <label class="text-sm text-gray-300">
+          Page
+          <select id="eog-select" class="w-full mt-1 rounded-md bg-black/70 border border-red-500/40 p-2 text-white">
+            <option value="https://www.eo-guides.com/">Home</option>
+            <option value="https://www.eo-guides.com/guides">Guides index</option>
+            <option value="https://www.eo-guides.com/quests" selected>Quests</option>
+            <option value="https://www.eo-guides.com/boss-encounters">Boss Encounters</option>
+            <option value="https://www.eo-guides.com/classes">Classes</option>
+            <option value="https://www.eo-guides.com/world-map">World Map</option>
+            <option value="https://www.eo-guides.com/commands">Commands</option>
+          </select>
+        </label>
+
+        <div class="flex-1"></div>
+
+        <a href="https://www.eo-guides.com/" target="_blank" rel="noopener"
+           class="inline-block rounded-md bg-red-600 px-4 py-2 text-white font-semibold hover:opacity-90">
+          Open full site
+        </a>
+      </div>
+
+      <!-- Fit-to-screen wrapper -->
+      <div id="eog-wrap" class="relative mt-4 rounded-xl overflow-hidden shadow-2xl ring-1 ring-red-500/40">
+        <iframe id="eog-frame"
+          src="https://www.eo-guides.com/quests"
+          class="absolute inset-0 w-full h-full border-0"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+          title="EO Guides"
+        ></iframe>
+      </div>
+
+      <!-- Fallback (shown if the site blocks iframes) -->
+      <div id="eog-fallback" class="hidden mt-3 rounded-md border border-red-500/30 bg-black/50 p-3 text-sm text-gray-300">
+        The site blocked embedding. Use the quick links below to open in a new tab.
+      </div>
+
+      <!-- Quick links -->
+      <div class="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+        <a class="rounded-md border border-red-500/30 bg-black/50 px-3 py-2 text-white hover:bg-black/60"
+           href="https://www.eo-guides.com/guides" target="_blank" rel="noopener">Guides index</a>
+        <a class="rounded-md border border-red-500/30 bg-black/50 px-3 py-2 text-white hover:bg-black/60"
+           href="https://www.eo-guides.com/boss-encounters" target="_blank" rel="noopener">Boss Encounters</a>
+        <a class="rounded-md border border-red-500/30 bg-black/50 px-3 py-2 text-white hover:bg-black/60"
+           href="https://www.eo-guides.com/classes" target="_blank" rel="noopener">Classes</a>
+        <a class="rounded-md border border-red-500/30 bg-black/50 px-3 py-2 text-white hover:bg-black/60"
+           href="https://www.eo-guides.com/world-map" target="_blank" rel="noopener">World Map</a>
+        <a class="rounded-md border border-red-500/30 bg-black/50 px-3 py-2 text-white hover:bg-black/60"
+           href="https://www.eo-guides.com/commands" target="_blank" rel="noopener">Commands</a>
+        <a class="rounded-md border border-red-500/30 bg-black/50 px-3 py-2 text-white hover:bg-black/60"
+           href="https://www.eo-guides.com/quests" target="_blank" rel="noopener">Quests</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="text-center py-6 border-t border-red-600 text-sm">
+    © 2025 EOBots. Built by atRisk.
+  </footer>
+
+  <!-- Scripts -->
   <script>
-  // Robust EOR loader (fixes "Loaded 0 ...")
+    // Toggle cards (single handler)
+    function toggleCard(cardEl) {
+      document.querySelectorAll('#howto .card').forEach(c => { if (c !== cardEl) collapseCard(c); });
+      const body = cardEl.querySelector('.card-body');
+      if (!body) return;
+      const open = body.classList.contains('hidden');
+      if (open) { body.classList.remove('hidden'); cardEl.classList.add('expanded'); }
+      else { collapseCard(cardEl); }
+    }
+    function collapseCard(cardEl) {
+      const body = cardEl.querySelector('.card-body');
+      if (!body || body.classList.contains('hidden')) return;
+      const iframe = body.querySelector('iframe');
+      if (iframe) { const s = iframe.src; iframe.src = s; } // stop playback
+      body.classList.add('hidden');
+      cardEl.classList.remove('expanded');
+    }
+
+    // Downloads loader (your schema)
+    async function loadDownloads() {
+      const container = document.getElementById('downloadsContainer');
+      try {
+        const res = await fetch('downloads.json', { cache: 'no-store' });
+        if (!res.ok) throw new Error(res.statusText);
+        const downloads = await res.json();
+        if (!Array.isArray(downloads)) throw new Error('downloads.json must be an array');
+
+        container.innerHTML = '';
+        downloads.forEach((d) => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `
+            <h3 class="text-xl font-bold mb-2">${d.title ?? 'Untitled'}</h3>
+            <p>${d.description ?? ''}</p>
+            <div class="hidden mt-4 text-sm">
+              ${d.version ? `<p><strong>Version:</strong> ${d.version}</p>` : ''}
+              ${d.details ? `<p>${d.details}</p>` : ''}
+              ${d.link ? `<a href="${d.link}" target="_blank" class="text-red-400 underline mt-2 inline-block">Download</a>` : ''}
+            </div>
+          `;
+          card.onclick = () => toggleCard(card);
+          container.appendChild(card);
+        });
+      } catch {
+        container.innerHTML = '<p class="text-red-400">Error loading downloads.json</p>';
+      }
+    }
+    loadDownloads();
+  </script>
+
+  <!-- EOR Search (robust + mobile sizing) -->
+  <script>
   (() => {
     const BASE = "https://eor-api.exile-studios.com";
     const unk = document.getElementById("eor-unk");
@@ -296,6 +351,7 @@
       return res.json();
     }
 
+    // unwrap list responses that may be arrays, maps, or nested in keys
     function unwrapForList(cat, data) {
       if (Array.isArray(data)) return data;
       if (data && typeof data === "object") {
@@ -344,112 +400,12 @@
         status.textContent = `Error loading ${cat}: ${e.message}`;
         cache[cat] = { raw: [], list: [] };
       }
+      sizeEOR(); // recalc heights after load
     }
 
     function applyFilter() {
       const needle = q.value.trim().toLowerCase();
-      const list = cache[current].list;
+      const list = cache[current].list || [];
       filtered = needle
         ? list.filter(r => String(r.name).toLowerCase().includes(needle) || String(r.id).toLowerCase().includes(needle))
-        : list.slice();
-      page = 0;
-      renderPage();
-    }
-
-    function renderPage() {
-      listEl.innerHTML = "";
-      const start = page * PAGE_SIZE;
-      const slice = filtered.slice(start, start + PAGE_SIZE);
-      if (!slice.length) {
-        listEl.innerHTML = `<li class="p-3 text-gray-300">No results.</li>`;
-        moreBtn.classList.add("hidden");
-        return;
-      }
-      const frag = document.createDocumentFragment();
-      for (const r of slice) {
-        const li = document.createElement("li");
-        li.className = "p-2 hover:bg-black/40 cursor-pointer";
-        li.innerHTML = `<div class="flex items-center justify-between gap-2">
-          <div class="truncate text-white">${escapeHtml(r.name)}</div>
-          <div class="text-xs text-gray-400">ID: ${escapeHtml(String(r.id))}</div>
-        </div>`;
-        li.addEventListener("click", () => showDetail(r));
-        frag.appendChild(li);
-      }
-      listEl.appendChild(frag);
-      moreBtn.classList.toggle("hidden", start + PAGE_SIZE >= filtered.length);
-    }
-
-    function escapeHtml(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
-
-    async function showDetail(r) {
-      titleEl.textContent = `${capitalize(current)} – ${r.name}`;
-      detailEl.textContent = "Loading details…";
-      imgWrap.innerHTML = "";
-      try {
-        const key = current === "shops" ? r.name : r.id;
-        const detailPath = catCfg[current].detail(key);
-        const data = await fetchJson(detailPath);
-        detailEl.textContent = JSON.stringify(data, null, 2);
-
-        const imgs = catCfg[current].images ? catCfg[current].images(r.id) : [];
-        if (imgs && imgs.length) {
-          for (const p of imgs) {
-            const url = qs(BASE + p);
-            const img = document.createElement("img");
-            img.src = url;
-            img.alt = current + " image";
-            img.className = "max-h-64 object-contain rounded border border-red-500/30 bg-black/70 p-2";
-            imgWrap.appendChild(img);
-          }
-        }
-        copyCurlBtn.onclick = () => copy(`curl "${qs(BASE + detailPath)}"`);
-        copyJsonBtn.onclick = () => copy(JSON.stringify(data, null, 2));
-      } catch (e) {
-        detailEl.textContent = "Error: " + e.message;
-        copyCurlBtn.onclick = null;
-        copyJsonBtn.onclick = null;
-      }
-    }
-
-    function copy(text){
-      navigator.clipboard.writeText(text).then(() => {
-        copyJsonBtn.textContent = "Copied";
-        copyCurlBtn.textContent = "Copied";
-        setTimeout(() => { copyJsonBtn.textContent = "Copy JSON"; copyCurlBtn.textContent = "Copy curl"; }, 800);
-      });
-    }
-
-    function capitalize(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
-
-    function setActive(cat) {
-      current = cat;
-      tabs.forEach(b => b.classList.toggle("bg-red-600", b.dataset.cat === cat));
-    }
-
-    async function initCategory(cat) {
-      setActive(cat);
-      await ensureList(cat);
-      applyFilter();
-    }
-
-    tabs.forEach(b => b.addEventListener("click", () => initCategory(b.dataset.cat)));
-    moreBtn.addEventListener("click", () => { page++; renderPage(); });
-
-    let t=0;
-    q.addEventListener("input", () => { clearTimeout(t); t = setTimeout(applyFilter, 150); });
-    unk.addEventListener("change", () => initCategory(current));
-
-    initCategory(current);
-  })();
-  </script>
-
-  <!-- EO Guides -->
-  <section id="eoguides" class="section px-4">
-    <h2 class="text-4xl font-bold text-red-500 mb-4">EO Guides</h2>
-
-    <div class="mx-auto max-w-5xl rounded-xl border border-red-500/40 bg-black/30 p-4">
-      <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <label class="text-sm text-gray-300">
-          Page
-          <select id=
+     
