@@ -40,33 +40,104 @@
     <div id="downloadsContainer" class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-6xl"></div>
   </section>
 
-  <!-- How To -->
-  <section id="howto" class="section px-6">
-    <h2 class="text-4xl font-bold text-red-500 mb-10">COMING SOON - How To Use</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl">
-      <div class="card" onclick="toggleCard(this)">
-        <h3 class="text-xl font-bold mb-2">Finding NPC Address</h3>
-        <p>Learn how to find NPC addresses.</p>
-        <div class="hidden mt-4">
-          <iframe width="560" height="315" src="https://www.youtube.com/embed/iTLIuEHOfd4?si=ONAaS13zwQDKNSgP" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-        </div>
-      </div>
-      <div class="card" onclick="toggleCard(this)">
-        <h3 class="text-xl font-bold mb-2">Configuring CaptchaBot</h3>
-        <p>Step-by-step setup tutorial.</p>
-        <div class="hidden mt-4">
-          <iframe class="w-full aspect-video rounded" src="https://www.youtube.com/embed/ysz5S6PUM-U" allowfullscreen></iframe>
-        </div>
-      </div>
-      <div class="card" onclick="toggleCard(this)">
-        <h3 class="text-xl font-bold mb-2">Recording Routes</h3>
-        <p>Guide to using the WalkPath Recorder.</p>
-        <div class="hidden mt-4">
-          <iframe width="560" height="315" src="https://www.youtube.com/embed/eIP6LVxiPqw?si=iVTs-2GNDcT5j953" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<!-- How To -->
+<section id="howto" class="section px-6">
+  <h2 class="text-4xl font-bold text-red-500 mb-10">COMING SOON - How To Use</h2>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl mx-auto">
+    <!-- Card -->
+    <div class="card group cursor-pointer rounded-2xl border border-white/10 bg-black/40 p-4 shadow-lg hover:shadow-xl transition"
+         onclick="toggleCard(this)">
+      <h3 class="text-xl font-bold mb-1">Finding NPC Address</h3>
+      <p class="text-white/80">Learn how to find NPC addresses.</p>
+      <div class="card-body hidden mt-4 overflow-hidden rounded-xl">
+        <div class="aspect-video w-full overflow-hidden rounded-xl">
+          <iframe
+            class="h-full w-full"
+            src="https://www.youtube.com/embed/iTLIuEHOfd4?si=ONAaS13zwQDKNSgP"
+            title="YouTube video player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen>
+          </iframe>
         </div>
       </div>
     </div>
-  </section>
+
+    <!-- Card -->
+    <div class="card group cursor-pointer rounded-2xl border border-white/10 bg-black/40 p-4 shadow-lg hover:shadow-xl transition"
+         onclick="toggleCard(this)">
+      <h3 class="text-xl font-bold mb-1">Configuring CaptchaBot</h3>
+      <p class="text-white/80">Step-by-step setup tutorial.</p>
+      <div class="card-body hidden mt-4 overflow-hidden rounded-xl">
+        <div class="aspect-video w-full overflow-hidden rounded-xl">
+          <iframe
+            class="h-full w-full"
+            src="https://www.youtube.com/embed/ysz5S6PUM-U"
+            title="YouTube video player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen>
+          </iframe>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card -->
+    <div class="card group cursor-pointer rounded-2xl border border-white/10 bg-black/40 p-4 shadow-lg hover:shadow-xl transition"
+         onclick="toggleCard(this)">
+      <h3 class="text-xl font-bold mb-1">Recording Routes</h3>
+      <p class="text-white/80">Guide to using the WalkPath Recorder.</p>
+      <div class="card-body hidden mt-4 overflow-hidden rounded-xl">
+        <div class="aspect-video w-full overflow-hidden rounded-xl">
+          <iframe
+            class="h-full w-full"
+            src="https://www.youtube.com/embed/eIP6LVxiPqw?si=iVTs-2GNDcT5j953"
+            title="YouTube video player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen>
+          </iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  function toggleCard(cardEl) {
+    // OPTIONAL: Only one open at a time. Comment out to allow multiple.
+    document.querySelectorAll('#howto .card').forEach(c => {
+      if (c !== cardEl) collapseCard(c);
+    });
+
+    const body = cardEl.querySelector('.card-body');
+    const willOpen = body.classList.contains('hidden');
+
+    if (willOpen) {
+      body.classList.remove('hidden');
+    } else {
+      collapseCard(cardEl);
+    }
+  }
+
+  function collapseCard(cardEl) {
+    const body = cardEl.querySelector('.card-body');
+    if (!body || body.classList.contains('hidden')) return;
+
+    // Stop playback by resetting the iframe src
+    const iframe = body.querySelector('iframe');
+    if (iframe) {
+      const src = iframe.src;
+      iframe.src = src; // reloads the embed, stopping playback
+    }
+    body.classList.add('hidden');
+  }
+</script>
+
 
  <!-- Forum -->
 <section id="forum" class="section px-4">
